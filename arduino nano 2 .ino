@@ -1,3 +1,15 @@
+// arduino nano 2
+
+int TRIG1 = 1;
+int TRIG2 = 6;
+int TRIG3 = 7;
+int ECO1 = 8; 
+int ECO2 = 9;
+int ECO3 = 10;
+int tiempo1 = 0;
+int tiempo2 = 0;
+int tiempo3 = 0;
+
 const int motorPin1 = 2;    // 28BYJ48 In1
 const int motorPin2 = 3;    // 28BYJ48 In2
 const int motorPin3 = 4;   // 28BYJ48 In3
@@ -11,8 +23,16 @@ int stepsPerRev = 4076;  // pasos para una vuelta completa
 //secuencia media fase
 const int numSteps = 8;
 const int stepsLookup[8] = { B1000, B1100, B0100, B0110, B0010, B0011, B0001, B1001 };
- 
- 
+
+int ultraSonido(int trig, int eco){
+  digitalWrite(trig,1);delay(1);digitalWrite(trig,0);//se genera un pulso en el ultrasonido emisor
+  int tiempo = pulseIn(eco,1);//se lee cuanto tarda el receptor en detectar la onda
+  return tiempo;
+}
+
+// TIEMPO DE SEGUIMIENTO .... CRONOMETRO.  camara detectando a la persona para seguirla. dependiendo del ultrasonico, 
+// arduino nano 1 .. qtr + tb66 + ultrasonico  ( GIRAR ) 
+// arduino nano 2 ... comunicacion spi camara + 4 pines de paso a paso.  
 void setup()
 {
   //declarar pines como salida
@@ -20,10 +40,26 @@ void setup()
   pinMode(motorPin2, OUTPUT);
   pinMode(motorPin3, OUTPUT);
   pinMode(motorPin4, OUTPUT);
+
+ // ultrasonido
+ pinMode(TRIG1,OUTPUT);
+  pinMode(TRIG2,OUTPUT);
+  pinMode(TRIG3,OUTPUT);
+  pinMode(ECO1,INPUT);
+  //pinMode(ECO2,INPUT);
+  //pinMode(ECO3,INPUT);
 }
  
 void loop()
 {
+ 
+tiempo1 = ultrasonido(TRIG1, ECO1);
+//tiempo2 = ultrasonido(TRIG2, ECO2);
+//tiempo3 = ultrasonido(TRIG3, ECO3);
+//// procesar....
+
+ // recepcion de codigo 
+ 
   for (int i = 0; i < stepsPerRev * 2; i++)
   {
     clockwise();
