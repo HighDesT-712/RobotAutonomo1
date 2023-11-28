@@ -1,6 +1,6 @@
-int TRIG1 = 1;
+int TRIG1 = 7;
 
-int ECO1 = 8; 
+int ECO1 = 6; 
 
 int tiempo1 = 0;
 
@@ -11,6 +11,8 @@ int ultraSonido(int trig, int eco){
 }
 
 void setup(){
+
+  Serial.begin(9600);
   pinMode(TRIG1,OUTPUT);
 
   pinMode(ECO1,INPUT);
@@ -18,8 +20,8 @@ void setup(){
 }
 
 void loop(){
-tiempo1 = ultrasonido(TRIG1, ECO1);
-
+tiempo1 = ultraSonido(TRIG1, ECO1);
+Serial.println(tiempo1-1400);
 // se usa como se quiere.
 
 }
