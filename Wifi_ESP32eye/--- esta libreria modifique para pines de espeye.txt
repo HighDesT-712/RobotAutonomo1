@@ -1,0 +1,25 @@
+D:\ADescargas\libraries\esp32cam
+
+en pins.hpp
+
+namespace pins {
+
+/** @brief Pin definition for AI Thinker ESP32-CAM. */  //las siguientes son para esp-eye en realidad, lo cambie.
+constexpr Pins AiThinker{
+  D0: 34, //5,
+  D1: 13, //18,
+  D2: 14, //19,
+  D3: 35,//21,
+  D4: 39,//36,
+  D5: 38,//39,
+  D6: 37,//34,
+  D7: 36,//35,
+  XCLK: 4,//0,
+  PCLK: 25,//22,
+  VSYNC: 5,//25,
+  HREF: 27,//23,
+  SDA: 18,//26,
+  SCL: 23,// 27,
+  RESET: -1,
+  PWDN: -1, //32
+};

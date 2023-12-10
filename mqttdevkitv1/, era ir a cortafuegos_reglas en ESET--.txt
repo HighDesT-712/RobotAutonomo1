@@ -1,0 +1,7 @@
+y reiniciar EL BROKER(SERVIDOR) DESDE "SERVICIOS" DE WINDOWS
+LO CUAL hara que se cargue con la nuevas reglas que defini
+si no reinicias no se aplican. experiencia.
+
+comandos : ( abre dos ventanas cmd, DESDE LA CARPETA DE INSTALACION DE MOSQUITTO)(pones cmd en la barra de direcciones arriba[unica forma sino no reconoce a mosquitto])
+mosquitto_pub -h 192.168.0.153 -t prueba -m "difjasidf"
+mosquitto_sub -d -t prueba

@@ -1,0 +1,17 @@
+import paho.mqtt.client as mqtt
+
+def on_connect(client, userdata, flags, rc):
+    print("Conectado al servidor MQTT")
+    client.subscribe("esp/test")
+
+def on_message(client, userdata, msg):
+    print(f"Mensaje recibido: {msg.payload.decode()}")
+
+    # Envío de un mensaje de respuesta al ESP32
+
+    client.publish("esp/control", "Mensaje de respuesta al ESP32")
+
+client = mqtt.Client()
+client.connect("192.168.0.153", 1883, 60) # Reemplaza con la dirección IP del ESP32
+
+client.publish("esp/control", "derecha") #retorna la direccion en la que debe girar el motor paso a paso
