@@ -1,0 +1,93 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+const char* ssid = "redmi11";
+const char* password = "11121112";
+const char* mqttServer = "192.168.190.61";
+const int mqttPort = 1883;
+
+//pines del esp32 para el motor paso a paso
+const int motorPin1 = 33;
+const int motorPin2 = 25;
+const int motorPin3 = 26;
+const int motorPin4 = 27;//23.83
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+//declaración del motor paso a paso
+const int NumeroPasos = 8;
+const int Paso[NumeroPasos] = {B1000, B1100, B0100, B0110, B0010, B0011, B0001, B1001};
+
+//función que controla el ángulo paso a paso
+void Angulo8(int ang) {
+  ang %= 8;
+  digitalWrite(motorPin1, bitRead(Paso[ang], 0));
+  digitalWrite(motorPin2, bitRead(Paso[ang], 1));
+  digitalWrite(motorPin3, bitRead(Paso[ang], 2));
+  digitalWrite(motorPin4, bitRead(Paso[ang], 3));
+  delay(1);
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("girar a en direccion : ");
+  //Serial.println(topic);
+
+  //Serial.print("Contenido: ");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+  if((char)payload[0] != 'c'){
+    if((char)payload[0] == 'd'){
+      for(int i = 0; i < 180; i++) {
+        Angulo8(i);
+        delay(1);
+      }
+    }else{
+      for(int i = 180; i > 0; i--) {
+        Angulo8(i);
+        delay(1);
+      }
+    }
+  } 
+  //posicion = ((char)payload[0] == 'd')? (posicion + 1) : (posicion - 1);
+  //if((char)payload[0] != 'c') ((char)payload[0] == 'd')? Serial.print(posicion): Serial.print(posicion);Serial.println();
+  //Serial.print(posicion);Serial.println();
+  //Angulo8(posicion);
+}
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Conectando a WiFi...");
+  }
+  Serial.println("Conectado a la red WiFi");
+
+  pinMode(motorPin1, OUTPUT);
+  pinMode(motorPin2, OUTPUT);
+  pinMode(motorPin3, OUTPUT);
+  pinMode(motorPin4, OUTPUT);
+
+  client.setServer(mqttServer, mqttPort);
+  client.setCallback(callback);
+
+  while (!client.connected()) {
+    Serial.println("Conectando al servidor MQTT...");
+    if (client.connect("ESP32Client")) {
+      Serial.println("Conectado al servidor MQTT");
+      client.subscribe("esp/control"); // Suscripción al topic esp/control
+    } else {
+      Serial.print("Fallo con error -> ");
+      Serial.print(client.state());
+      delay(2000);
+    }
+  }
+}
+
+void loop() {
+  client.loop();
+}
