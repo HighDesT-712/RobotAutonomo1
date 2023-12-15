@@ -1,0 +1,100 @@
+#include <QTRSensors.h>
+const uint8_t pwmA=3 , Ain_p=5, Ain_n=4;//pines del motor A
+const uint8_t pwmB=9, Bin_p=8, Bin_n=7;// pines del motor B
+const uint8_t stby=6;// pines del activado del driver del motor
+const uint8_t modo=11;//pin de modo
+const uint8_t trig=10,echo=2;//pines del ultrasonido
+
+int v_max=180, v_freno=-80;
+
+//funcion de curvatura
+int V=0;//salidas de velocidad (v_media se tiene que diseñar)
+const int D=340,m=180;//variables físicas del móvil (por medir)m es la distancia entre del centro lógico al qtr y D es la distancia entre las ruedas
+
+//funcion de PID
+float integral=0,derivada=0,prev=0;//variables necesarias para el PID iniciales
+const float Kp=1,Kd=0.6,Ki=0.12;//constantes del PID(por diseñar)
+
+//definición de sensor de entrada
+QTRSensors qtr;//definición del qtr
+uint16_t sensorValues[6];//variables para el sensor
+int8_t last;
+
+void setup(){
+  Serial.begin(9600);
+  pinMode(pwmA,OUTPUT);pinMode(Ain_p,OUTPUT);pinMode(Ain_n,OUTPUT);//modos de los pines A
+  pinMode(pwmB,OUTPUT);pinMode(Bin_p,OUTPUT);pinMode(Bin_n,OUTPUT);//modos de los pines B
+  pinMode(stby,OUTPUT);digitalWrite(stby,0);//driver de motores desactivado
+  pinMode(trig,OUTPUT);pinMode(echo,INPUT);//pines del ultrasonido
+  pinMode(modo,INPUT);
+  
+  for(int i=14;i<=21;i++) pinMode(i,INPUT);
+  qtr.setTypeRC();
+  qtr.setSensorPins((const uint8_t[]){A0, A1, A2, A3, A4, A5,}, 6);//pines del qtr
+  qtr.setEmitterPin(12);
+  pinMode(LED_BUILTIN, OUTPUT);
+  
+  calibrar();
+}
+
+void loop(){
+  while(digitalRead(modo)==0)delay(110);//esperar
+  digitalWrite(stby,1);//activado de motores
+  
+  while(digitalRead(modo)==1){
+    
+    //v_max=(ultraSonido()-2100)/9;
+    int desviado = desvio();
+
+    // en caso de requerir freno
+    while(abs(desviado)>15){
+      (desviado < 0)? drive(150, v_freno) : drive(v_freno, 150);
+      integral = 0;
+      desviado = desvio();
+    }
+    Serial.print(desviado);Serial.print(" ");
+    //lazo realimentado de curvatura
+    float C=curv(desviado * 1.0);
+    int v_cal=v_max*(1-abs(C))/(1+abs(C));
+    int v_min=PID(v_cal);
+    (C <= 0)? drive(v_max, v_min):drive(v_min, v_max);
+   //    delay(100); // para el diferencial e integral. suficiente tiempo.
+
+  }
+  digitalWrite(stby,0);//ahorro de energía
+}
+
+void calibrar(){
+  while(digitalRead(modo)==0)delay(110);//esperar a que el switch esté en posición
+  digitalWrite(LED_BUILTIN,1);//inicio de calibración
+  while(digitalRead(modo)==1)qtr.calibrate();
+  digitalWrite(LED_BUILTIN,0);//fin de calibración
+}
+
+void drive(int velocidad_A,int velocidad_B){
+  uint8_t pinA=(velocidad_A>=0)? 1:0;uint8_t pinB=(velocidad_B>=0)? 1:0;//definicion mat de pines
+  digitalWrite(Ain_p,pinA);digitalWrite(Ain_n,1-pinA);analogWrite(pwmA,velocidad_A*(2*pinA-1));//avanza motor A
+  digitalWrite(Bin_p,pinB);digitalWrite(Bin_n,1-pinB);analogWrite(pwmB,velocidad_B*(2*pinB-1));//avanza motor B
+  Serial.print(velocidad_A);Serial.print(" ");Serial.println(velocidad_B);
+}
+float curv(float l){
+  float C=(D*l)/(m*m+l*l);//calculo de la curvatura //m es distancia largo del chasis
+  return C; // D es la distancia entre ruedas //C es la curvatura constante
+}
+float PID(int controlable){ //controla cruvaturas virtuales para que el robot intente mejorar .
+  derivada=controlable-prev;integral+=controlable;if(controlable>=0.7*v_max)integral=0;//calculo de la derivada e integral
+  float controlado=Kp*controlable+Kd*derivada+Ki*integral;//control PID
+  prev=controlado;//guardar nueva curvatura como previa
+//  Serial.print(controlado);Serial.print(" ");
+  return controlado;
+}
+int desvio(){ //dependiendo de los sensores, 
+  int position = qtr.readLineBlack(sensorValues); //se lee el desvio de los sensores
+  int l=((int)position - 2500)/100;
+  return l;
+}
+int ultraSonido(){
+  digitalWrite(trig,1);delay(1);digitalWrite(trig,0);//se genera un pulso en el ultrasonido emisor
+  int tiempo = pulseIn(echo,1);//se lee cuanto tarda el receptor en detectar la onda
+  return tiempo;
+}
