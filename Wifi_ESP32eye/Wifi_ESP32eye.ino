@@ -6,8 +6,13 @@
 // ESTE PROGRAMA ENVIA IMAGEN SI SE COLOCA EN IP WEB, PERO SI SE COLOCA EN PYTHON ENVIA VIDEO POR LAS ITERACIONES. . . (SI FUNCIONA EN PYTHON)
 //const char* WIFI_SSID = "SAMANEZ 2.4GHZ";
 //const char* WIFI_PASS = "1416055544";
+
 const char* WIFI_SSID = "UNI_LIBRE_H";
 const char* WIFI_PASS = "123456789";
+
+//const char* WIFI_SSID = "redmi11";
+//const char* WIFI_PASS = "11121112";
+
 
 WebServer server(80); //servidor en el puerto 80
 

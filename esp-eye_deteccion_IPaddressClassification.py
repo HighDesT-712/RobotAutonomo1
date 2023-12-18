@@ -9,10 +9,6 @@ import time
 #urlesp32 = 'http://192.168.0.132/'
 
 #urlespeye = 'http://192.168.0.210/cam-hi.jpg'   #SAMANEZ 2.4GHZ
-
-
-
-
 #urlespeye = 'http://192.168.190.25/cam-hi.jpg'  #redmi11 en CASA
 #urlespeye = 'http://192.168.218.25/cam-hi.jpg'  #redmi11 en SALON IEE
 urlespeye = 'http://10.1.34.183/cam-hi.jpg'  #wifi UNILIBRE en salon ieee
@@ -26,6 +22,7 @@ urlespeye = 'http://10.1.34.183/cam-hi.jpg'  #wifi UNILIBRE en salon ieee
 #urlbrokerwindows= '192.168.190.61'  # REDMI11 RED
 #urlbrokerwindows= '192.168.218.254'  # REDMI11 RED EN SALON IEEE
 urlbrokerwindows ='10.1.32.91' # wifi UNILIBRE para pruebas
+
 
 def on_connect(client, userdata, flags, rc):
     print("Conectado al servidor MQTT")
@@ -62,16 +59,28 @@ net.setInputSwapRB(True)
 client = mqtt.Client()
 client.connect(urlbrokerwindows, 1883, 60) # Reemplaza con la dirección IP del ESP32
 message = "izquierda" #valor inicial de la variable message para pruebas al quitar partes de codigo.
+<<<<<<< HEAD
 x_center = 0
+=======
+
+>>>>>>> ec0747849a98621db8420ed59b3c4b8cb522dbc9
 
 # client.loop_forever() # PARA QUE ESCUCHE TODO EL TIEMPO A LOS MENSAJES QUE VAN LLEGANDO , PERO SE QUEDA EN ESTE BUCLE
 # el esp32devkitv1, indicara si necesita recibir DIRECCION o no. y el periodo de tiempo en el cual lo ira solicitando
 
+<<<<<<< HEAD
 next_publish_time = time.time() + 0.5  # Publicar inmediatamente en el primer ciclo
 
 while(1):
 
     imgResponse = urllib.request.urlopen(urlespeye) #abrimos el URL
+=======
+next_publish_time = time.time() + 1  # Publicar inmediatamente en el primer ciclo
+
+while(1):
+
+    imgResponse = urllib.request.urlopen (urlespeye) #abrimos el URL
+>>>>>>> ec0747849a98621db8420ed59b3c4b8cb522dbc9
     imgNp = np.array(bytearray(imgResponse.read()),dtype=np.uint8)
     img = cv2.imdecode (imgNp,-1) #decodificamos
 
@@ -138,6 +147,7 @@ while(1):
 
     if time.time() >= next_publish_time:  # cada 1 segundo ENVIARA porque asi lo determine, sino enviaria miles de veces en 1 segundo
         #client.publish("esp/control", "derecha") # retorna la direccion en la que debe girar el motor paso a paso
+<<<<<<< HEAD
         client.publish("esp/control", str(x_center))
         #client.publish("esp/control", message)  # retorna la direccion en la que debe girar el motor paso a paso
         next_publish_time = time.time() + 0.5  # Establece el próximo tiempo de publicación en 0.5 segundos
@@ -146,4 +156,12 @@ while(1):
     #client.publish("esp/control", message)  # retorna la direccion en la que debe girar el motor paso a paso
     # print("Dimensiones de la ventana:", window_size)  #con esto confirme que el tamaño de la imagen que recibo es 600(ancho)x800(largo)
 
+=======
+        client.publish("esp/control", message)  # retorna la direccion en la que debe girar el motor paso a paso
+        next_publish_time = time.time() + 1  # Establece el próximo tiempo de publicación
+       # print("Dimensiones de la ventana:", window_size)  #con esto confirme que el tamaño de la imagen que recibo es 600(ancho)x800(largo)
+
+    #client.publish("esp/control", message)  # retorna la direccion en la que debe girar el motor paso a paso
+    # print("Dimensiones de la ventana:", window_size)  #con esto confirme que el tamaño de la imagen que recibo es 600(ancho)x800(largo)
+>>>>>>> ec0747849a98621db8420ed59b3c4b8cb522dbc9
 cv2.destroyAllWindows()
