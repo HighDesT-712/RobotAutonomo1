@@ -1,0 +1,4 @@
+se inicializa en cmd en barradirecciones de la carpeta instalacion
+se comprueba la version : mosquitto -v
+se inicializa con los comandos
+se verifi---

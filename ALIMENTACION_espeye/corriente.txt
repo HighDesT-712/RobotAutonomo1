@@ -1,0 +1,6 @@
+Fuente de alimentación: 5V
+Corriente de funcionamiento: 0.5A
+Salida de corriente total de I/O: 1200mA
+Temperatura de funcionamiento: -40 ~ 125 ℃
+Temperatura de almacenamiento: -50 ~ 150 ℃
+Dimensiones: 41,00x21,00x6,50mm/1,61x0,83x0,26”

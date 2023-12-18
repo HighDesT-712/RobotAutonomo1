@@ -1,0 +1,21 @@
+namespace pins {
+
+/** @brief Pin definition for AI Thinker ESP32-CAM. */ //PINES ADAPTADOS PARA ESP-EYE
+constexpr Pins AiThinker{
+  D0: 34,
+  D1: 13,
+  D2: 14,
+  D3: 35,
+  D4: 39,
+  D5: 38,
+  D6: 37,
+  D7: 36,
+  XCLK: 4,
+  PCLK: 25,
+  VSYNC: 5,
+  HREF: 27,
+  SDA: 18,
+  SCL: 23,
+  RESET: -1,
+  PWDN: -1,
+};
